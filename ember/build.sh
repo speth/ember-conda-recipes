@@ -4,10 +4,6 @@ echo "****************************"
 echo "BUILD STARTED"
 echo "****************************"
 
-if [[ "$DIRTY" != "1" ]]; then
-    scons clean
-fi
-
 rm -f ember.conf
 
 cp "${RECIPE_DIR}/../.ci_support/ember_base.conf" ember.conf
