@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    # Build on tags that look like releases
+    tags:
+      - v*
+    # Build when main is pushed to
+    branches:
+      - main
+  pull_request:
+    # Build when a pull request targets main
+    branches:
+      - main
+env:
+  MACOSX_DEPLOYMENT_TARGET: "10.9"
+
+jobs:
+  build-x64:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2016, ubuntu-latest, macos-latest]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set Up macOS
+      if: runner.os == 'macOS'
+      run: echo "::set-env name=CONDA_BUILD_SYSROOT::$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${MACOSX_DEPLOYMENT_TARGET}.sdk"
+    - name: Install macOS SDK
+      if: runner.os == 'macOS'
+      run: |
+        curl -L -O https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX${MACOSX_DEPLOYMENT_TARGET}.sdk.tar.xz
+        tar -xf MacOSX${MACOSX_DEPLOYMENT_TARGET}.sdk.tar.xz -C "$(dirname "$CONDA_BUILD_SYSROOT")"
+        # set minimum sdk version to our target
+        plutil -replace MinimumSDKVersion -string ${MACOSX_DEPLOYMENT_TARGET} $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+        plutil -replace DTSDKName -string macosx${MACOSX_DEPLOYMENT_TARGET}internal $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
+    - name: Append to conda build config
+      if: runner.os == 'macOS'
+      run: |
+        echo "
+        CONDA_BUILD_SYSROOT:
+        - ${CONDA_BUILD_SYSROOT}
+        " >> ./.ci_support/conda_build_config.yaml;
+        echo "
+        numpy:
+        - 1.11
+        " >> ${HOME}/conda_build_config.yaml;
+    - uses: goanpeca/setup-miniconda@v1
+      with:
+        auto-update-conda: true
+        conda-build-version: '3.18'
+        activate-environment: ''
+        auto-activate-base: true
+      name: Set Up Conda
+    - name: Install Conda dependencies
+      shell: bash -l {0}
+      run: conda install -q anaconda-client conda-verify\<4.0 ripgrep
+    - name: Build Ember
+      shell: bash -l {0}
+      run: conda build ./ember -m ./.ci_support/conda_build_config.yaml
+    - name: Upload package to anaconda.org
+      run: |
+        anaconda --token ${{ secrets.ANACONDA_TOKEN }} upload --force --label dev $CONDA/conda-bld/*/*cantera*.tar.bz2
+      shell: bash -l {0}
+      if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'

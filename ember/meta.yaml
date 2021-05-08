@@ -1,0 +1,74 @@
+{% set data = load_file_regex(load_file='python/setup.py.in', regex_pattern="version='([\d.abrc]+)'") %}
+
+package:
+  name: ember-recipe
+  version: {{ data.group(1) }}
+
+source:
+  git_url: https://github.com/speth/ember.git
+  git_tag: main
+
+requirements:
+  build:
+  host:
+    - libboost
+    - mkl  # [linux]
+
+build:
+  number: 0
+  include_recipe: True
+
+outputs:
+  - name: ember
+    script: build.sh  # [not win]
+    script: build.bat  # [win]
+    requirements:
+      build:
+        - {{ compiler('cxx') }}  # [not win]
+        - vs2017_win-64 ==19.15.*  # [win64]
+        - scons >=3.1
+        - cython
+        - python >=3.6
+        - cantera >= 2.5.1
+        - libcantera-devel >= 2.5.1
+        - numpy
+        - pywin32  # [win]
+      host:
+        - libboost
+        - tbb
+        - mkl  # [linux]
+        - eigen
+        - fmt
+        - yaml-cpp
+      run:
+        - vs2017_win-64 ==19.15.*  # [win]
+        - libboost
+        - {{ pin_compatible('numpy') }}
+        - h5py
+        - tbb
+        - mkl  # [linux]
+        - vs2015_runtime  # [win]
+    build:
+      include_recipe: True
+      ignore_run_exports:
+        - libboost
+
+    test:
+        imports:
+          - cantera
+        commands:
+          - python -m unittest -v ember.test
+
+about:
+  home: https://github.com/speth/ember
+  summary: "Quasi-one-dimensional, unsteady reacting flow solver"
+  license: MIT
+  license_file: License.txt
+  dev_url: https://github.com/speth/ember
+  description: Ember can be used to simulate a number of fundamental flame
+    configurations, including premixed laminar flames, opposed flow strained flames
+    (premixed or diffusion), axisymmetric (tubular) flames with positive or negative
+    curvature, and steady 2D flames in a prescribed velocity field (using the method
+    of lines). Ember integrates the governing equations using a variant on the Strang
+    splitting method called rebalanced splitting, which eliminates steady-state errors.
+  doc_url: https://speth.github.io/ember-doc
