@@ -15,8 +15,8 @@ requirements:
     - scons >=3.1
     - cython
     - python >=3.6
-    - cantera >= 2.5.1
-    - libcantera-devel >= 2.5.1
+    - cantera >=2.5.1
+    - libcantera-devel >=2.5.1
     - numpy
     - pywin32  # [win]
   host:
