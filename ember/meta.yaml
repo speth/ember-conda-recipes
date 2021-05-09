@@ -8,6 +8,33 @@ source:
   git_url: https://github.com/speth/ember.git
   git_tag: main
 
+requirements:
+  build:
+    - {{ compiler('cxx') }}  # [not win]
+    - vs2017_win-64 ==19.15.*  # [win64]
+    - scons >=3.1
+    - cython
+    - python >=3.6
+    - pywin32  # [win]
+  host:
+    - cantera >=2.5.1
+    - libcantera-devel >=2.5.1
+    - numpy
+    - libboost
+    - tbb
+    - mkl  # [linux]
+    - sundials >=5.0.0
+    - eigen
+    - fmt
+    - yaml-cpp
+  run:
+    - vs2017_win-64 ==19.15.*  # [win]
+    - {{ pin_compatible('numpy') }}
+    - h5py
+    - tbb
+    - mkl  # [linux]
+    - vs2015_runtime  # [win]
+
 build:
   number: 0
   include_recipe: True
@@ -16,33 +43,6 @@ outputs:
   - name: ember
     script: build.sh  # [not win]
     script: build.bat  # [win]
-    requirements:
-      build:
-        - {{ compiler('cxx') }}  # [not win]
-        - vs2017_win-64 ==19.15.*  # [win64]
-        - scons >=3.1
-        - cython
-        - python >=3.6
-        - cantera >=2.5.1
-        - libcantera-devel >=2.5.1
-        - numpy
-        - pywin32  # [win]
-        - sundials >=5.0.0
-      host:
-        - libboost
-        - tbb
-        - mkl  # [linux]
-        - eigen
-        - fmt
-        - yaml-cpp
-      run:
-        - vs2017_win-64 ==19.15.*  # [win]
-        - libboost
-        - {{ pin_compatible('numpy') }}
-        - h5py
-        - tbb
-        - mkl  # [linux]
-        - vs2015_runtime  # [win]
     build:
       include_recipe: True
       ignore_run_exports:
