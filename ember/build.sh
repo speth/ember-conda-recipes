@@ -31,3 +31,5 @@ set +xe
 echo "****************************"
 echo "BUILD COMPLETED SUCCESSFULLY"
 echo "****************************"
+
+${BUILD_PREFIX}/bin/scons install
