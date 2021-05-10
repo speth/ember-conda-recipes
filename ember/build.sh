@@ -8,6 +8,7 @@ rm -f ember.conf
 
 cp "${RECIPE_DIR}/../.ci_support/ember_base.conf" ember.conf
 
+echo "python_cmd = '${PREFIX}/bin/python'" >> ember.conf
 echo "include = '${PREFIX}/include'" >> ember.conf
 echo "eigen = '${PREFIX}/include/eigen3'" >> ember.conf
 echo "libdirs = '${PREFIX}/lib'" >> ember.conf
@@ -23,7 +24,7 @@ fi
 
 set -xe
 
-scons build -j${CPU_COUNT}
+${BUILD_PREFIX}/bin/scons build -j${CPU_COUNT}
 
 set +xe
 
