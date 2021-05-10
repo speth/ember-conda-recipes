@@ -11,6 +11,7 @@ cp "${RECIPE_DIR}/../.ci_support/ember_base.conf" ember.conf
 echo "include = '${PREFIX}/include'" >> ember.conf
 echo "eigen = '${PREFIX}/include/eigen3'" >> ember.conf
 echo "libdirs = '${PREFIX}/lib'" >> ember.conf
+echo "link_flags = '${LDFLAGS}'" >> ember.conf
 
 if [[ "${OSX_ARCH}" == "" ]]; then
     echo "CXX = '${CXX}'" >> ember.conf
