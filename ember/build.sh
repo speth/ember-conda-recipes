@@ -1,5 +1,10 @@
 set +x
 
+echo "Starting build.sh"
+echo "vvvvvvvv BUILD ENVIRONMENT vvvvvvvvvvvvv"
+env
+echo "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+
 echo "****************************"
 echo "BUILD STARTED"
 echo "****************************"
