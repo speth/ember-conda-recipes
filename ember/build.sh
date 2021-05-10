@@ -24,7 +24,7 @@ fi
 
 set -xe
 
-${BUILD_PREFIX}/bin/scons build -j${CPU_COUNT}
+${CONDA_PREFIX}/bin/scons build -j${CPU_COUNT}
 
 set +xe
 
@@ -32,4 +32,4 @@ echo "****************************"
 echo "BUILD COMPLETED SUCCESSFULLY"
 echo "****************************"
 
-${BUILD_PREFIX}/bin/scons install
+${CONDA_PREFIX}/bin/scons install
