@@ -21,7 +21,7 @@ requirements:
     - libcantera-devel >=2.5.1
     - numpy
     - libboost
-    - tbb
+    - tbb-devel
     - mkl  # [linux]
     - sundials >=5.0.0
     - eigen
